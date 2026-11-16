@@ -1,0 +1,92 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 6,
+            "passed": 0,
+            "failed": 6,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1794826659.8438935,
+            "stop": 1794826659.9291883
+        },
+        "tests": [
+            {
+                "name": "test_reconcile.py::test_basic_transactions",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.012442249999992328,
+                "start": 1794826659.847417,
+                "stop": 1794826659.8649457,
+                "retries": 0,
+                "file_path": "test_reconcile.py",
+                "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_basic_transactions0')\n\n    def test_basic_transactions(tmp_path):\n        csv_content = \"\"\"tx_id,timestamp,amount,status\n    T1,2025-01-01T10:00:00+00:00,42.75,SUCCESS\n    T2,2025-01-01T11:00:00+00:00,50.00,FAILED\n    T3,2025-01-01T12:00:00+00:00,25.00,PENDING\n    \"\"\"\n        result = run_program(tmp_path, csv_content)\n        assert result.returncode == 0\n        output = json.loads(result.stdout)\n>       assert output[\"total_valid_amount\"] == 42.75\nE       assert 1 == 42.75\n\n/tests/test_reconcile.py:32: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_reconcile.py::test_duplicate_transaction_ids",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0113397910000117,
+                "start": 1794826659.8650498,
+                "stop": 1794826659.8778787,
+                "retries": 0,
+                "file_path": "test_reconcile.py",
+                "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_duplicate_transaction_ids0')\n\n    def test_duplicate_transaction_ids(tmp_path):\n        csv_content = \"\"\"tx_id,timestamp,amount,status\n    T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS\n    T1,2025-01-01T12:00:00+00:00,50.00,SUCCESS\n    \"\"\"\n        result = run_program(tmp_path, csv_content)\n        assert result.returncode == 0\n        output = json.loads(result.stdout)\n>       assert output[\"total_valid_amount\"] == 50.00\nE       assert 1 == 50.0\n\n/tests/test_reconcile.py:44: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_reconcile.py::test_timezone_comparison",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.01231783399998676,
+                "start": 1794826659.8779624,
+                "stop": 1794826659.8913507,
+                "retries": 0,
+                "file_path": "test_reconcile.py",
+                "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_timezone_comparison0')\n\n    def test_timezone_comparison(tmp_path):\n        csv_content = \"\"\"tx_id,timestamp,amount,status\n    T1,2025-01-01T08:30:00+00:00,200.00,FAILED\n    T1,2025-01-01T09:00:00,100.00,SUCCESS\n    \"\"\"\n    \n        result = run_program(tmp_path, csv_content)\n    \n        assert result.returncode == 0\n    \n        output = json.loads(result.stdout)\n    \n>       assert output[\"valid_count\"] == 1\nE       assert 0 == 1\n\n/tests/test_reconcile.py:60: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_reconcile.py::test_malformed_records",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.011357914999990726,
+                "start": 1794826659.8914275,
+                "stop": 1794826659.9039524,
+                "retries": 0,
+                "file_path": "test_reconcile.py",
+                "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_malformed_records0')\n\n    def test_malformed_records(tmp_path):\n        csv_content = \"\"\"tx_id,timestamp,amount,status\n    T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS\n    ,2025-01-01T11:00:00+00:00,50.00,SUCCESS\n    T2,invalid-date,50.00,SUCCESS\n    \"\"\"\n    \n        result = run_program(tmp_path, csv_content)\n    \n        assert result.returncode == 0\n    \n        output = json.loads(result.stdout)\n    \n>       assert output[\"total_valid_amount\"] == 100.00\nE       assert 2 == 100.0\n\n/tests/test_reconcile.py:76: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_reconcile.py::test_missing_command_line_argument",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.011399624999995694,
+                "start": 1794826659.9040453,
+                "stop": 1794826659.916534,
+                "retries": 0,
+                "file_path": "test_reconcile.py",
+                "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_missing_command_line_argu0')\n\n    def test_missing_command_line_argument(tmp_path):\n        (tmp_path / \"transactions.csv\").write_text(\n            \"tx_id,timestamp,amount,status\\n\"\n            \"T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS\\n\"\n        )\n    \n        result = subprocess.run(\n            [sys.executable, str(PROGRAM)],\n            cwd=tmp_path,\n            capture_output=True,\n            text=True\n        )\n    \n>       assert result.returncode != 0\nE       assert 0 != 0\nE        +  where 0 = CompletedProcess(args=['/usr/local/bin/python', '/app/reconcile.py'], returncode=0, stdout='{\"total_valid_amount\": 1, \"valid_count\": 1, \"failed_count\": 0}\\n', stderr='').returncode\n\n/tests/test_reconcile.py:93: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_reconcile.py::test_unseen_input_values",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.011331667000007428,
+                "start": 1794826659.9166155,
+                "stop": 1794826659.9290986,
+                "retries": 0,
+                "file_path": "test_reconcile.py",
+                "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_unseen_input_values0')\n\n    def test_unseen_input_values(tmp_path):\n        csv_content = \"\"\"tx_id,timestamp,amount,status\n    A,2025-03-01T10:00:00+00:00,13.25,SUCCESS\n    B,2025-03-01T10:00:00+00:00,7.40,SUCCESS\n    C,2025-03-01T10:00:00+00:00,5.00,FAILED\n    D,2025-03-01T10:00:00+00:00,99.00,PENDING\n    A,2025-03-01T11:00:00+00:00,8.75,SUCCESS\n    \"\"\"\n    \n        result = run_program(tmp_path, csv_content)\n    \n        assert result.returncode == 0\n    \n        output = json.loads(result.stdout)\n    \n>       assert output[\"total_valid_amount\"] == 16.15\nE       assert 2 == 16.15\n\n/tests/test_reconcile.py:111: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

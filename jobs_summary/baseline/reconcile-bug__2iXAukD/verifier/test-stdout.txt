@@ -1,0 +1,297 @@
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: pip install --upgrade pip
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________________________ test_basic_transactions ____________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_basic_transactions0')
+
+    def test_basic_transactions(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    T1,2025-01-01T10:00:00+00:00,42.75,SUCCESS
+    T2,2025-01-01T11:00:00+00:00,50.00,FAILED
+    T3,2025-01-01T12:00:00+00:00,25.00,PENDING
+    """
+        result = run_program(tmp_path, csv_content)
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+>       assert output["total_valid_amount"] == 42.75
+E       assert 1 == 42.75
+
+/tests/test_reconcile.py:32: AssertionError
+=========================== short test summary info ============================
+FAILED ../tests/test_reconcile.py::test_basic_transactions - assert 1 == 42.75
+1 failed in 0.02s
+FAIL: Basic amount calculation (+0 points)
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________________ test_duplicate_transaction_ids ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_duplicate_transaction_ids0')
+
+    def test_duplicate_transaction_ids(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS
+    T1,2025-01-01T12:00:00+00:00,50.00,SUCCESS
+    """
+        result = run_program(tmp_path, csv_content)
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+>       assert output["total_valid_amount"] == 50.00
+E       assert 1 == 50.0
+
+/tests/test_reconcile.py:44: AssertionError
+=========================== short test summary info ============================
+FAILED ../tests/test_reconcile.py::test_duplicate_transaction_ids - assert 1 ...
+1 failed in 0.02s
+FAIL: Duplicate transaction handling (+0 points)
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________________________ test_timezone_comparison ___________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_timezone_comparison0')
+
+    def test_timezone_comparison(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    T1,2025-01-01T08:30:00+00:00,200.00,FAILED
+    T1,2025-01-01T09:00:00,100.00,SUCCESS
+    """
+    
+        result = run_program(tmp_path, csv_content)
+    
+        assert result.returncode == 0
+    
+        output = json.loads(result.stdout)
+    
+>       assert output["valid_count"] == 1
+E       assert 0 == 1
+
+/tests/test_reconcile.py:60: AssertionError
+=========================== short test summary info ============================
+FAILED ../tests/test_reconcile.py::test_timezone_comparison - assert 0 == 1
+1 failed in 0.02s
+FAIL: Timezone comparison (+0 points)
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____________________________ test_malformed_records ____________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-3/test_malformed_records0')
+
+    def test_malformed_records(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS
+    ,2025-01-01T11:00:00+00:00,50.00,SUCCESS
+    T2,invalid-date,50.00,SUCCESS
+    """
+    
+        result = run_program(tmp_path, csv_content)
+    
+        assert result.returncode == 0
+    
+        output = json.loads(result.stdout)
+    
+>       assert output["total_valid_amount"] == 100.00
+E       assert 2 == 100.0
+
+/tests/test_reconcile.py:76: AssertionError
+=========================== short test summary info ============================
+FAILED ../tests/test_reconcile.py::test_malformed_records - assert 2 == 100.0
+1 failed in 0.02s
+FAIL: Malformed records (+0 points)
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_missing_command_line_argument ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-4/test_missing_command_line_argu0')
+
+    def test_missing_command_line_argument(tmp_path):
+        (tmp_path / "transactions.csv").write_text(
+            "tx_id,timestamp,amount,status\n"
+            "T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS\n"
+        )
+    
+        result = subprocess.run(
+            [sys.executable, str(PROGRAM)],
+            cwd=tmp_path,
+            capture_output=True,
+            text=True
+        )
+    
+>       assert result.returncode != 0
+E       assert 0 != 0
+E        +  where 0 = CompletedProcess(args=['/usr/local/bin/python', '/app/reconcile.py'], returncode=0, stdout='{"total_valid_amount": 1, "valid_count": 1, "failed_count": 0}\n', stderr='').returncode
+
+/tests/test_reconcile.py:93: AssertionError
+=========================== short test summary info ============================
+FAILED ../tests/test_reconcile.py::test_missing_command_line_argument - asser...
+1 failed in 0.02s
+FAIL: CLI argument handling (+0 points)
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________________________ test_unseen_input_values ___________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-5/test_unseen_input_values0')
+
+    def test_unseen_input_values(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    A,2025-03-01T10:00:00+00:00,13.25,SUCCESS
+    B,2025-03-01T10:00:00+00:00,7.40,SUCCESS
+    C,2025-03-01T10:00:00+00:00,5.00,FAILED
+    D,2025-03-01T10:00:00+00:00,99.00,PENDING
+    A,2025-03-01T11:00:00+00:00,8.75,SUCCESS
+    """
+    
+        result = run_program(tmp_path, csv_content)
+    
+        assert result.returncode == 0
+    
+        output = json.loads(result.stdout)
+    
+>       assert output["total_valid_amount"] == 16.15
+E       assert 2 == 16.15
+
+/tests/test_reconcile.py:111: AssertionError
+=========================== short test summary info ============================
+FAILED ../tests/test_reconcile.py::test_unseen_input_values - assert 2 == 16.15
+1 failed in 0.02s
+FAIL: Unseen input values (+0 points)
+============================= test session starts ==============================
+platform linux -- Python 3.12.16, pytest-8.4.1, pluggy-1.7.0
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collected 6 items
+
+../tests/test_reconcile.py FFFFFF                                        [100%]
+
+=================================== FAILURES ===================================
+___________________________ test_basic_transactions ____________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_basic_transactions0')
+
+    def test_basic_transactions(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    T1,2025-01-01T10:00:00+00:00,42.75,SUCCESS
+    T2,2025-01-01T11:00:00+00:00,50.00,FAILED
+    T3,2025-01-01T12:00:00+00:00,25.00,PENDING
+    """
+        result = run_program(tmp_path, csv_content)
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+>       assert output["total_valid_amount"] == 42.75
+E       assert 1 == 42.75
+
+/tests/test_reconcile.py:32: AssertionError
+________________________ test_duplicate_transaction_ids ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_duplicate_transaction_ids0')
+
+    def test_duplicate_transaction_ids(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS
+    T1,2025-01-01T12:00:00+00:00,50.00,SUCCESS
+    """
+        result = run_program(tmp_path, csv_content)
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+>       assert output["total_valid_amount"] == 50.00
+E       assert 1 == 50.0
+
+/tests/test_reconcile.py:44: AssertionError
+___________________________ test_timezone_comparison ___________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_timezone_comparison0')
+
+    def test_timezone_comparison(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    T1,2025-01-01T08:30:00+00:00,200.00,FAILED
+    T1,2025-01-01T09:00:00,100.00,SUCCESS
+    """
+    
+        result = run_program(tmp_path, csv_content)
+    
+        assert result.returncode == 0
+    
+        output = json.loads(result.stdout)
+    
+>       assert output["valid_count"] == 1
+E       assert 0 == 1
+
+/tests/test_reconcile.py:60: AssertionError
+____________________________ test_malformed_records ____________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_malformed_records0')
+
+    def test_malformed_records(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS
+    ,2025-01-01T11:00:00+00:00,50.00,SUCCESS
+    T2,invalid-date,50.00,SUCCESS
+    """
+    
+        result = run_program(tmp_path, csv_content)
+    
+        assert result.returncode == 0
+    
+        output = json.loads(result.stdout)
+    
+>       assert output["total_valid_amount"] == 100.00
+E       assert 2 == 100.0
+
+/tests/test_reconcile.py:76: AssertionError
+______________________ test_missing_command_line_argument ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_missing_command_line_argu0')
+
+    def test_missing_command_line_argument(tmp_path):
+        (tmp_path / "transactions.csv").write_text(
+            "tx_id,timestamp,amount,status\n"
+            "T1,2025-01-01T10:00:00+00:00,100.00,SUCCESS\n"
+        )
+    
+        result = subprocess.run(
+            [sys.executable, str(PROGRAM)],
+            cwd=tmp_path,
+            capture_output=True,
+            text=True
+        )
+    
+>       assert result.returncode != 0
+E       assert 0 != 0
+E        +  where 0 = CompletedProcess(args=['/usr/local/bin/python', '/app/reconcile.py'], returncode=0, stdout='{"total_valid_amount": 1, "valid_count": 1, "failed_count": 0}\n', stderr='').returncode
+
+/tests/test_reconcile.py:93: AssertionError
+___________________________ test_unseen_input_values ___________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-6/test_unseen_input_values0')
+
+    def test_unseen_input_values(tmp_path):
+        csv_content = """tx_id,timestamp,amount,status
+    A,2025-03-01T10:00:00+00:00,13.25,SUCCESS
+    B,2025-03-01T10:00:00+00:00,7.40,SUCCESS
+    C,2025-03-01T10:00:00+00:00,5.00,FAILED
+    D,2025-03-01T10:00:00+00:00,99.00,PENDING
+    A,2025-03-01T11:00:00+00:00,8.75,SUCCESS
+    """
+    
+        result = run_program(tmp_path, csv_content)
+    
+        assert result.returncode == 0
+    
+        output = json.loads(result.stdout)
+    
+>       assert output["total_valid_amount"] == 16.15
+E       assert 2 == 16.15
+
+/tests/test_reconcile.py:111: AssertionError
+=========================== short test summary info ============================
+FAILED ../tests/test_reconcile.py::test_basic_transactions - assert 1 == 42.75
+FAILED ../tests/test_reconcile.py::test_duplicate_transaction_ids - assert 1 ...
+FAILED ../tests/test_reconcile.py::test_timezone_comparison - assert 0 == 1
+FAILED ../tests/test_reconcile.py::test_malformed_records - assert 2 == 100.0
+FAILED ../tests/test_reconcile.py::test_missing_command_line_argument - asser...
+FAILED ../tests/test_reconcile.py::test_unseen_input_values - assert 2 == 16.15
+============================== 6 failed in 0.09s ===============================
+Total score: 0/100
+Final reward: 0.00

@@ -1,0 +1,44 @@
+{
+    "schema_version": 1,
+    "id": "9906c2b5-bf01-49c0-8d75-8bc39152ef8b",
+    "started_at": "2026-11-16T16:24:55.052487",
+    "updated_at": "2026-11-16T16:27:43.284970",
+    "finished_at": "2026-11-16T16:27:43.284970",
+    "n_total_trials": 3,
+    "stats": {
+        "n_completed_trials": 3,
+        "n_errored_trials": 0,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "aider__openai/gpt-oss-20b__adhoc": {
+                "n_trials": 3,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "mean": 0.0
+                    }
+                ],
+                "pass_at_k": {
+                    "2": 0.0
+                },
+                "reward_stats": {
+                    "reward": {
+                        "0.0": [
+                            "reconcile-bug__SN4bEW9",
+                            "reconcile-bug__VgE9wx6",
+                            "reconcile-bug__2iXAukD"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        },
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null
+    }
+}
